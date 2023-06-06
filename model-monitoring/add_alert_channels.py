@@ -4,14 +4,22 @@ from qwak.alerting.channel import SlackChannel, Channel
 
 wire_dependencies()
 
-# from qwak_proto.di_configuration.session import Session
-# Session().set_environment("daisy")
+
+def set_session(env_name: str):
+    """
+    Sets the working environment for this session
+    """
+    from qwak_proto.di_configuration.session import Session
+    Session().set_environment(env_name)
 
 
-def add_slack_channel(channel_name: str, webhook_url: str):
+def add_slack_channel(api_url: str, channel_name: str):
+    """
+    Adds a new Slack channel to Qwak
+    """
     client = AlertingRegistryClient()
     slack = SlackChannel(
-        api_url=webhook_url
+        api_url=api_url
     )
     channel = Channel(
         name=channel_name,
@@ -21,7 +29,19 @@ def add_slack_channel(channel_name: str, webhook_url: str):
 
 
 if __name__ == '__main__':
+    """
+    Use this script to add new Slack channels to receive model monitoring alerts
+    """
+
+    # Optionally set a different remove environment
+    # set_session("daisy")
+
+    # This URL should be your Webhook URL provided from Slack
+    SLACK_API_URL = "<your-slack-webhook-url>"
+    # The Slack channel where alerts are received
     SLACK_CHANNEL_NAME = "monitor-alerts"
-    SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/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"
-    add_slack_channel(channel_name=SLACK_CHANNEL_NAME,
-                      webhook_url=SLACK_WEBHOOK_URL)
+
+    add_slack_channel(
+        api_url=SLACK_API_URL,
+        channel_name=SLACK_CHANNEL_NAME
+    )
